@@ -1,0 +1,34 @@
+{
+    "name": "FishingInput",
+    "maps": [
+        {
+            "name": "FishingControls",
+            "id": "74190877-de27-403a-a249-d91b29ef729f",
+            "actions": [
+                {
+                    "name": "CastAction",
+                    "type": "Button",
+                    "id": "b9f1897e-1ca3-4375-add8-a1cd2b984ff8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "09d99abd-0485-447e-b80d-9de801732968",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CastAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

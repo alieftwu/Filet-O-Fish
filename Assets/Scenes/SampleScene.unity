@@ -242,11 +242,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f3af3c356e2ae6346893512397408e38,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 150579931}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f3af3c356e2ae6346893512397408e38,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 150579930}
+      addedObject: {fileID: 150579935}
   m_SourcePrefab: {fileID: 100100000, guid: f3af3c356e2ae6346893512397408e38, type: 3}
 --- !u!4 &150579928 stripped
 Transform:
@@ -260,36 +256,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 150579927}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &150579930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 150579929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b3b4d7575a95d04f81383f7bf9444cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rodTip: {fileID: 424502692}
-  bobberRb: {fileID: 622942676}
-  castForce: 10
---- !u!114 &150579931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 150579929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b20d5741bcc3b464f90a9115b9663f21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lineRenderer: {fileID: 150579932}
-  rodTip: {fileID: 424502692}
-  bobber: {fileID: 622942680}
 --- !u!120 &150579932
 LineRenderer:
   serializedVersion: 2
@@ -573,6 +539,37 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &150579935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 150579929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27b0bbdaf8745b145a3fde4357846841, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineRenderer: {fileID: 150579932}
+  rodTip: {fileID: 424502692}
+  bobber: {fileID: 622942680}
+  bobberRb: {fileID: 622942676}
+  castPower: 10
+  castThreshold: 0.2
+  castAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Cast
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 07940ce6-b832-4829-88ff-485f49a4d53f
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4409387009541203986, guid: 193c9973036468049be4d3f717bac593,
+      type: 3}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1530,7 +1527,7 @@ GameObject:
   - component: {fileID: 538766752}
   m_Layer: 0
   m_Name: XR Origin (XR Rig)
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
