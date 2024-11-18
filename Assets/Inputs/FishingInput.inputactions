@@ -7,12 +7,12 @@
             "actions": [
                 {
                     "name": "CastAction",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "b9f1897e-1ca3-4375-add8-a1cd2b984ff8",
-                    "expectedControlType": "Button",
-                    "processors": "",
+                    "expectedControlType": "Vector3",
+                    "processors": "NormalizeVector3",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -20,6 +20,28 @@
                     "name": "",
                     "id": "09d99abd-0485-447e-b80d-9de801732968",
                     "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CastAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9eb102dd-2e61-47e2-a351-d55d0787428e",
+                    "path": "<XRController>{RightHand}/devicePosition",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CastAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dce8a084-2e07-411d-a871-80e5f6ea93a3",
+                    "path": "<XRController>{RightHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
