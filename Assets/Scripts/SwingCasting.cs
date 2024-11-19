@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class SwingCasting : MonoBehaviour
 {
+    public Transform rodTip; // Reference to the rod tip object.
     public Transform bobber; // Reference to the bobber object.
     public LineRenderer lineRenderer; // Reference to the LineRenderer for the fishing line.
     public float castForceMultiplier = 2f; // Multiplier for the cast force based on controller velocity.
@@ -9,7 +10,8 @@ public class SwingCasting : MonoBehaviour
 
     private Vector3 initialBobberPosition; // Store the bobber's initial position.
     private Rigidbody bobberRb; // Bobber's Rigidbody.
-    private bool isCast = false;
+    private bool isCast = false; // Track if the bobber is currently cast.
+    private bool isInWater = false; // Track if the bobber is in the water.
 
     void Start()
     {
@@ -22,14 +24,14 @@ public class SwingCasting : MonoBehaviour
     void Update()
     {
         // Update the LineRenderer to simulate the fishing line.
-        lineRenderer.SetPosition(0, transform.position); // Starting point (rod tip).
-        lineRenderer.SetPosition(1, bobber.position); // End point (bobber).
+        lineRenderer.SetPosition(0, rodTip.position); // Starting point at the rod tip.
+        lineRenderer.SetPosition(1, bobber.position); // End point at the bobber.
 
         // Get the controller's velocity.
         Vector3 controllerVelocity = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.RTouch);
 
-        // Detect a swing motion based on velocity.
-        if (!isCast && controllerVelocity.magnitude > velocityThreshold)
+        // Detect a swing motion based on velocity, and only allow casting if not already cast or in the water.
+        if (!isCast && !isInWater && controllerVelocity.magnitude > velocityThreshold)
         {
             CastBobber(controllerVelocity);
         }
@@ -50,7 +52,9 @@ public class SwingCasting : MonoBehaviour
 
     void ResetBobber()
     {
+        // Reset everything to allow another cast.
         isCast = false;
+        isInWater = false;
         bobberRb.isKinematic = true; // Stop physics interactions.
         bobber.position = initialBobberPosition; // Reset bobber position.
     }
@@ -60,6 +64,7 @@ public class SwingCasting : MonoBehaviour
         // Check if the bobber collides with the water.
         if (other.CompareTag("Water"))
         {
+            isInWater = true; // Mark the bobber as in the water.
             bobberRb.isKinematic = true; // Stop the bobber's movement.
             bobberRb.velocity = Vector3.zero; // Reset velocity to stop it completely.
         }

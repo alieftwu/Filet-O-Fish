@@ -27203,9 +27203,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddba2481a57cc3c45abe0fb4f3d75b60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rodTip: {fileID: 27727982}
   bobber: {fileID: 1690313809}
   lineRenderer: {fileID: 1725005938}
-  castForceMultiplier: 2
+  castForceMultiplier: 7
   velocityThreshold: 1.5
 --- !u!1001 &1727998650
 PrefabInstance:
