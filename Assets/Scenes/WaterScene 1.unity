@@ -18789,7 +18789,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1806251082521260, guid: 8f6e03115ed50b943980d68d9115f1bd,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1529914797}
   m_SourcePrefab: {fileID: 100100000, guid: 8f6e03115ed50b943980d68d9115f1bd, type: 3}
 --- !u!1001 &1189387402
 PrefabInstance:
@@ -24511,6 +24515,33 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1516011983}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1529914794 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1806251082521260, guid: 8f6e03115ed50b943980d68d9115f1bd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1188677746}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1529914797
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1529914794}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5.000001, y: 0.0000035321618, z: 5.0000024}
+  m_Center: {x: -2.5000007, y: 0.00000031235925, z: 0.00000032782555}
 --- !u!1 &1539584114
 GameObject:
   m_ObjectHideFlags: 0
@@ -26564,7 +26595,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -27169,15 +27200,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1725005937}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 198cc066b7d1c7d4e842734499c1802d, type: 3}
+  m_Script: {fileID: 11500000, guid: ddba2481a57cc3c45abe0fb4f3d75b60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRenderer: {fileID: 1725005938}
-  rodTip: {fileID: 27727982}
   bobber: {fileID: 1690313809}
-  bobberRb: {fileID: 1690313813}
-  castPower: 5
-  castThreshold: 0.2
+  lineRenderer: {fileID: 1725005938}
+  castForceMultiplier: 2
+  velocityThreshold: 1.5
 --- !u!1001 &1727998650
 PrefabInstance:
   m_ObjectHideFlags: 0
