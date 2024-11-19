@@ -65,8 +65,13 @@ public class SwingCasting : MonoBehaviour
         if (other.CompareTag("Water"))
         {
             isInWater = true; // Mark the bobber as in the water.
+            if(isInWater)
+            {
             bobberRb.isKinematic = true; // Stop the bobber's movement.
             bobberRb.velocity = Vector3.zero; // Reset velocity to stop it completely.
+            lineRenderer.SetPosition(0, rodTip.position); // Starting point at the rod tip.
+            lineRenderer.SetPosition(1, bobber.position); // End point at the bobber.
+            }
         }
     }
 }
