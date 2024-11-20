@@ -29,7 +29,8 @@ public class SwingCasting : MonoBehaviour
 
         if (!isCast && !isInWater)
         {
-            bobber.position = rodTip.position;
+            bobber.position = rodTip.position - new Vector3(0, 0.2f, 0);
+
         }
 
         Vector3 controllerVelocity = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.RTouch);
@@ -57,7 +58,8 @@ public class SwingCasting : MonoBehaviour
         isCast = false;
         isInWater = false;
         bobberRb.isKinematic = true;
-        bobber.position = rodTip.position;
+        bobber.position = rodTip.position - new Vector3(0, 0.2f, 0);
+
     }
 
     private void OnTriggerEnter(Collider other)
