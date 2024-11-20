@@ -27257,7 +27257,7 @@ MonoBehaviour:
   rodTip: {fileID: 27727982}
   bobber: {fileID: 1690313809}
   lineRenderer: {fileID: 1725005938}
-  castForceMultiplier: 7
+  castForceMultiplier: 11
   velocityThreshold: 1.5
   bobberOffset: {x: 0, y: -0.5, z: 0}
 --- !u!1001 &1727998650
