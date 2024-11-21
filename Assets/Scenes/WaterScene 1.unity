@@ -26576,7 +26576,7 @@ Transform:
   m_GameObject: {fileID: 1690313808}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000014901163, y: 0.000000014901163, z: 0.7660445, w: -0.64278764}
-  m_LocalPosition: {x: -0.081, y: -0.497, z: 2.18}
+  m_LocalPosition: {x: -0.08100006, y: -0.497, z: 1.7300004}
   m_LocalScale: {x: 0.1, y: 0.09999999, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -27096,7 +27096,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7454e17b283ddd442a3b5bdd48b7f86f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7454e17b283ddd442a3b5bdd48b7f86f,
         type: 3}
@@ -27106,7 +27106,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7454e17b283ddd442a3b5bdd48b7f86f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.28
+      value: 0.83
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7454e17b283ddd442a3b5bdd48b7f86f,
         type: 3}
@@ -27306,6 +27306,8 @@ MonoBehaviour:
   velocityThreshold: 1.5
   catchSound: {fileID: 8300000, guid: f38a6f5ef2ede2c4b89423a0897a50b3, type: 3}
   bobberOffset: {x: 0, y: -0.5, z: 0}
+  sinkDepth: -0.1
+  sinkDuration: 0.2
 --- !u!1001 &1727998650
 PrefabInstance:
   m_ObjectHideFlags: 0
