@@ -102,9 +102,13 @@ public class SwingCasting : MonoBehaviour
     {
         if (hasFish)
         {
+            //I can't see how the fish are lined up after catch, so just add and alter if needed
+            //the offset to whichever axis makes the most sense
+            float offset = 0f;
             caughtFish.transform.SetParent(boat);
-            caughtFish.transform.localPosition = new Vector3(0, 0.5f, 0);
+            caughtFish.transform.localPosition = new Vector3(0f + offset, 0.5f, 0);
             caughtFish = null;
+            offset = offset + 0.5f;
         }
 
         isCast = false;
@@ -143,23 +147,29 @@ public class SwingCasting : MonoBehaviour
                 Destroy(splashEffect, 0.5f); // Adjust duration as necessary
             }
 
-            // Check if a fish is caught
-            if (Random.value <= catchChance)
-            {
-                hasFish = true;
-
-                // Spawn the fish object slightly below the water
-                Vector3 fishSpawnPosition = bobber.position + new Vector3(0, -0.2f, 0); // Adjust -0.2f for desired sink depth
-                caughtFish = Instantiate(fishPrefab, fishSpawnPosition, Quaternion.identity);
-
-                // Play the catch sound
-                if (catchSound != null && audioSource != null)
-                {
-                    audioSource.PlayOneShot(catchSound);
-                }
-            }
+            StartCoroutine(WaitForCatch());
         }
     }
+    private IEnumerator WaitForCatch()
+    {
+        //Wait between 10-45 seconds for catch
+        float waitTime = Random.Range(10f, 45f);
+        yield return new WaitForSeconds(waitTime);
+
+        
+        hasFish = true;
+
+        // Spawn the fish object slightly below the water
+        Vector3 fishSpawnPosition = bobber.position + new Vector3(0, -0.2f, 0); // Adjust -0.2f for desired sink depth
+        caughtFish = Instantiate(fishPrefab, fishSpawnPosition, Quaternion.identity);
+
+        // Play the catch sound
+        if (catchSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(catchSound);
+        }
+    }
+    
 
     private IEnumerator SinkBobber(Vector3 targetPosition, float duration)
     {
