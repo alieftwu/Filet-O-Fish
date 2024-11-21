@@ -27297,12 +27297,14 @@ MonoBehaviour:
   boat: {fileID: 1247500131}
   lineRenderer: {fileID: 1725005938}
   fishPrefab: {fileID: 357532186}
+  splashEffectPrefab: {fileID: 7171521028357965389, guid: 0f6e3cca3748ff346aa616e2fd2974be,
+    type: 3}
   catchChance: 1
   bobbingSpeed: 2
   bobbingHeight: 0.2
   castForceMultiplier: 11
   velocityThreshold: 1.5
-  catchSound: {fileID: 8300000, guid: e09b7cfd4b500134ebc121b1be4f976f, type: 3}
+  catchSound: {fileID: 8300000, guid: f38a6f5ef2ede2c4b89423a0897a50b3, type: 3}
   bobberOffset: {x: 0, y: -0.5, z: 0}
 --- !u!1001 &1727998650
 PrefabInstance:

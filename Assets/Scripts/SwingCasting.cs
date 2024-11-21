@@ -1,20 +1,25 @@
 using UnityEngine;
+using System.Collections;
 
 public class SwingCasting : MonoBehaviour
 {
     public Transform rodTip;
     public Transform bobber;
-    public Transform boat; // reference to the boat for placing caught fish
+    public Transform boat; // Reference to the boat for placing caught fish
     public LineRenderer lineRenderer;
     public GameObject fishPrefab; // Prefab for the fish to spawn when caught
-    
-    public float catchChance = 1.0f; //100% chance to catch a fish (FOR TESTING)
+    public GameObject splashEffectPrefab; // Prefab for the splash effect
+
+    public float catchChance = 1.0f; // 100% chance to catch a fish (FOR TESTING)
     public float bobbingSpeed = 2f; // Speed of bobber bobbing animation
     public float bobbingHeight = 0.2f;
     public float castForceMultiplier = 1f;
     public float velocityThreshold = 1.5f;
     public AudioClip catchSound; // Sound effect for catching a fish
     public Vector3 bobberOffset = new Vector3(0f, -0.5f, 0f);
+    public float sinkDepth = -0.1f; // How far the bobber sinks on collision
+    public float sinkDuration = 0.2f; // How long the sinking animation lasts
+
     private Vector3 initialBobberPosition;
     private Rigidbody bobberRb;
     private GameObject caughtFish;
@@ -25,7 +30,6 @@ public class SwingCasting : MonoBehaviour
     private AudioSource audioSource; // Reference to the AudioSource
     private BobCollider bobberCollision;
 
-
     void Start()
     {
         bobberRb = bobber.GetComponent<Rigidbody>();
@@ -33,14 +37,16 @@ public class SwingCasting : MonoBehaviour
         bobberRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         initialBobberPosition = bobber.position;
         lineRenderer.positionCount = 2;
+
         // Initialize the AudioSource
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
         bobberCollision = bobber.GetComponent<BobCollider>();
-        if(bobberCollision != null)
+        if (bobberCollision != null)
         {
             bobberCollision.OnBobberCollision += HandleBobberCollision;
         }
@@ -51,12 +57,20 @@ public class SwingCasting : MonoBehaviour
         lineRenderer.SetPosition(0, rodTip.position);
         lineRenderer.SetPosition(1, bobber.position);
 
-        if(isCast && isInWater && hasFish)
+        if (isCast && isInWater)
         {
-            Debug.Log("about to play animation");
+            // Bobbing animation
             bobbingTimer += Time.deltaTime * bobbingSpeed;
-            bobber.position += new Vector3(0, Mathf.Sin(bobbingTimer) * bobbingHeight * Time.deltaTime, 0);
+            float bobbingOffset = Mathf.Sin(bobbingTimer) * bobbingHeight * Time.deltaTime;
+            bobber.position += new Vector3(0, bobbingOffset, 0);
+
+            // Make the fish follow the bobber's bobbing
+            if (hasFish && caughtFish != null)
+            {
+                caughtFish.transform.position = bobber.position + new Vector3(0, -0.2f, 0); // Keep fish slightly below the bobber
+            }
         }
+
         if (!isCast && !isInWater)
         {
             bobber.position = rodTip.position + bobberOffset;
@@ -86,13 +100,13 @@ public class SwingCasting : MonoBehaviour
 
     void ResetBobber()
     {
-        Debug.Log("RESET BOBBER PRESSED");
         if (hasFish)
         {
             caughtFish.transform.SetParent(boat);
-            caughtFish.transform.localPosition = new Vector3(0,0.5f,0);
+            caughtFish.transform.localPosition = new Vector3(0, 0.5f, 0);
             caughtFish = null;
         }
+
         isCast = false;
         isInWater = false;
         hasFish = false;
@@ -105,11 +119,10 @@ public class SwingCasting : MonoBehaviour
 
     private void HandleBobberCollision(Collision other)
     {
-        Debug.Log("IN WATER BEFORE COMPARE TAG IS CALLED");
         if (other.gameObject.CompareTag("Water"))
         {
             isInWater = true;
-            //Debug.Log("IN WATER");
+
             // Stop all physics-based movement
             bobberRb.isKinematic = true;
             bobberRb.useGravity = false;
@@ -119,21 +132,27 @@ public class SwingCasting : MonoBehaviour
             // Freeze position and rotation
             bobberRb.constraints = RigidbodyConstraints.FreezeAll;
 
-            // Force position update
-            //bobber.position = other.ClosestPoint(bobber.position);
+            // Smooth sinking effect for bobber
+            Vector3 bobberSinkPosition = bobber.position + new Vector3(0, sinkDepth, 0);
+            StartCoroutine(SinkBobber(bobberSinkPosition, sinkDuration));
 
-            lineRenderer.SetPosition(0, rodTip.position);
-            lineRenderer.SetPosition(1, bobber.position);
+            // Instantiate splash particle effect
+            if (splashEffectPrefab != null)
+            {
+                GameObject splashEffect = Instantiate(splashEffectPrefab, bobber.position, Quaternion.identity);
+                Destroy(splashEffect, 0.5f); // Adjust duration as necessary
+            }
+
+            // Check if a fish is caught
             if (Random.value <= catchChance)
             {
                 hasFish = true;
 
-                //Play bobber animation
-                bobbingTimer = 0;
-                Debug.Log("FISH CAUGHT: ");
-                //Spawn the fish object
-                caughtFish = Instantiate(fishPrefab, bobber.position, Quaternion.identity);
-                // Play the sound
+                // Spawn the fish object slightly below the water
+                Vector3 fishSpawnPosition = bobber.position + new Vector3(0, -0.2f, 0); // Adjust -0.2f for desired sink depth
+                caughtFish = Instantiate(fishPrefab, fishSpawnPosition, Quaternion.identity);
+
+                // Play the catch sound
                 if (catchSound != null && audioSource != null)
                 {
                     audioSource.PlayOneShot(catchSound);
@@ -141,6 +160,22 @@ public class SwingCasting : MonoBehaviour
             }
         }
     }
+
+    private IEnumerator SinkBobber(Vector3 targetPosition, float duration)
+    {
+        Vector3 startPosition = bobber.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            bobber.position = Vector3.Lerp(startPosition, targetPosition, elapsed / duration);
+            yield return null;
+        }
+
+        bobber.position = targetPosition; // Ensure it finishes at the exact target position
+    }
+
     private void OnDestroy()
     {
         // Unsubscribe from the event to avoid memory leaks
