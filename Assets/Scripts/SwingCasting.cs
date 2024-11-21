@@ -10,7 +10,7 @@ public class SwingCasting : MonoBehaviour
     public GameObject fishPrefab; // Prefab for the fish to spawn when caught
     public GameObject splashEffectPrefab; // Prefab for the splash effect
 
-    public float catchChance = 1.0f; // 100% chance to catch a fish (FOR TESTING)
+    //public float catchChance = 1.0f; // 100% chance to catch a fish (FOR TESTING)
     public float bobbingSpeed = 2f; // Speed of bobber bobbing animation
     public float bobbingHeight = 0.2f;
     public float castForceMultiplier = 1f;
@@ -29,6 +29,7 @@ public class SwingCasting : MonoBehaviour
     private float bobbingTimer;
     private AudioSource audioSource; // Reference to the AudioSource
     private BobCollider bobberCollision;
+    private float offset = 0f;
 
     void Start()
     {
@@ -102,13 +103,11 @@ public class SwingCasting : MonoBehaviour
     {
         if (hasFish)
         {
-            //I can't see how the fish are lined up after catch, so just add and alter if needed
-            //the offset to whichever axis makes the most sense
-            float offset = 0f;
             caughtFish.transform.SetParent(boat);
-            caughtFish.transform.localPosition = new Vector3(0f + offset, 0.5f, 0);
+            caughtFish.transform.localPosition = new Vector3(0f + offset, 0.4f, 0);
+            caughtFish.transform.localRotation = Quaternion.Euler(90f, 0f, 90f);
             caughtFish = null;
-            offset = offset + 0.5f;
+            offset = offset - 0.3f;
         }
 
         isCast = false;
@@ -153,7 +152,7 @@ public class SwingCasting : MonoBehaviour
     private IEnumerator WaitForCatch()
     {
         //Wait between 10-45 seconds for catch
-        float waitTime = Random.Range(10f, 45f);
+        float waitTime = Random.Range(25f, 50f);
         yield return new WaitForSeconds(waitTime);
 
         
