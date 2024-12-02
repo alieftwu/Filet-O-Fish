@@ -99,15 +99,27 @@ public class SwingCasting : MonoBehaviour
         bobberRb.velocity = velocity * castForceMultiplier;
     }
 
+    private int fishCatchCount = 0; // Counter for the number of times the block executes
+    private const int maxFishCount = 3; // Maximum number of fish that can be processed
+
     void ResetBobber()
     {
         if (hasFish)
         {
-            caughtFish.transform.SetParent(boat);
-            caughtFish.transform.localPosition = new Vector3(0f + offset, 0.4f, 0);
-            caughtFish.transform.localRotation = Quaternion.Euler(90f, 0f, 90f);
-            caughtFish = null;
-            offset = offset - 0.3f;
+            if (fishCatchCount < maxFishCount)
+            {
+                caughtFish.transform.SetParent(boat);
+                caughtFish.transform.localPosition = new Vector3(0f + offset, 0.4f, 0);
+                caughtFish.transform.localRotation = Quaternion.Euler(90f, 0f, 90f);
+                offset -= 0.3f;
+            }
+            else
+            {
+                Destroy(caughtFish); // Delete the fish if the limit is exceeded
+            }
+
+            caughtFish = null; // Clear the reference to the caught fish
+            fishCatchCount++; // Increment the counter
         }
 
         isCast = false;
@@ -119,6 +131,8 @@ public class SwingCasting : MonoBehaviour
         bobberRb.constraints = RigidbodyConstraints.None;
         bobber.position = rodTip.position + bobberOffset;
     }
+
+
 
     private void HandleBobberCollision(Collision other)
     {
