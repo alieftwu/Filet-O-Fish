@@ -5,7 +5,14 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/WaterScene.unity
+    guid: ed5bbf26752cc8c4c817abf25aedee5c
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  m_configObjects: {}
+    path: Assets/Scenes/WaterScene 1.unity
+    guid: f13bbb2a0aac92d4f8541f45d6c299a1
+  m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: c738aadf136e1dd4aa0a976665122e39,
+      type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 3f0141a7b136ce1468aca547cdace785,
+      type: 2}
