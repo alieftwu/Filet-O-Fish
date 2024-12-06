@@ -6,61 +6,73 @@ public class BoatMovementWithMotor : MonoBehaviour
 {
     [Header("References")]
     public Transform motorHandle; // Reference to the motor handle GameObject
+    public Rigidbody boatRigidbody; // Reference to the boat's Rigidbody
 
     [Header("Movement Settings")]
     public float forwardAcceleration = 5f;
-    public float maxSpeed = 20f;
-    public float rotationSpeed = 50f;
+    public float maxSpeed = 10f;
+    public float rotationSpeed = 0.5f; // Degrees per second
+    public float maxRotationSpeed = 2f;
     public float drag = 0.98f;
 
     private float currentSpeed = 0f;
 
-    void Update()
+    void FixedUpdate() // Use FixedUpdate for physics-related logic
     {
-        if (motorHandle != null)
+        if (motorHandle != null && boatRigidbody != null)
         {
             HandleMotorInput();
-            MoveBoat();
         }
         else
         {
-            Debug.LogWarning("Motor Handle is not assigned!");
+            Debug.LogWarning("Motor Handle or Boat Rigidbody is not assigned!");
         }
     }
 
     void HandleMotorInput()
     {
-        // Get the rotation of the motor handle
+        // Get the local rotation of the motor handle
         Vector3 handleRotation = motorHandle.localEulerAngles;
 
         // Normalize rotation angles (-180 to 180 range)
         if (handleRotation.x > 180f) handleRotation.x -= 360f;
-        if (handleRotation.y > 180f) handleRotation.y -= 360f;
+        if (handleRotation.z > 180f) handleRotation.z -= 360f;
 
-        // Determine forward/backward speed based on handle pitch (x-axis tilt)
-        if (handleRotation.x > 0f) // Tilted up
+        // Forward/backward speed based on handle tilt (x-axis rotation)
+        if (handleRotation.x < -90f) // Tilted down (forward)
         {
-            currentSpeed += forwardAcceleration * Time.deltaTime;
+            currentSpeed += forwardAcceleration * Time.fixedDeltaTime;
         }
-        else if (handleRotation.x < 0f) // Tilted down
+        else if (handleRotation.x > -90f) // Tilted up (backward)
         {
-            currentSpeed -= forwardAcceleration * Time.deltaTime;
+            currentSpeed -= forwardAcceleration * Time.fixedDeltaTime;
+
+            // Prevent reversing
+            if (currentSpeed < 0f)
+                currentSpeed = 0f;
         }
 
         // Clamp speed
-        currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed, maxSpeed);
+        currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeed);
 
-        // Determine turning based on handle yaw (y-axis rotation)
-        float rotationInput = handleRotation.y;
-        transform.Rotate(Vector3.up, rotationInput * rotationSpeed * Time.deltaTime);
-    }
+        // Turning logic based on yaw (z-axis rotation)
+        float yawInput = -handleRotation.z * 0.2f; // Flip rotation direction
+        float turnAmount = yawInput * rotationSpeed * Time.fixedDeltaTime;
+        float clampedTurnAmount = Mathf.Clamp(turnAmount, -maxRotationSpeed, maxRotationSpeed);
 
-    void MoveBoat()
-    {
-        // Apply forward/backward movement
-        transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
+        // Apply rotation using MoveRotation to only rotate on the Y-axis
+        Quaternion deltaRotation = Quaternion.Euler(0, clampedTurnAmount, 0);
+        boatRigidbody.MoveRotation(boatRigidbody.rotation * deltaRotation);
 
-        // Apply drag
+        // Move the boat forward based on the current speed (only in the Z-direction)
+        Vector3 forwardDirection = boatRigidbody.transform.TransformDirection(Vector3.forward).normalized; // Local forward direction, normalized
+        boatRigidbody.velocity = forwardDirection * currentSpeed; // Only update velocity in forward direction
+
+        // Apply drag to gradually reduce speed
         currentSpeed *= drag;
+
+        // Stop the boat completely if speed is very low
+        if (currentSpeed < 0.01f)
+            currentSpeed = 0f;
     }
 }
