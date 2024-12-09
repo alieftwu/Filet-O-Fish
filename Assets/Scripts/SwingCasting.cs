@@ -6,8 +6,14 @@ public class SwingCasting : MonoBehaviour
     public Transform rodTip;
     public Transform bobber;
     public Transform boat; // Reference to the boat for placing caught fish
+    public Transform ovrCameraRig;
     public LineRenderer lineRenderer;
     public GameObject fishPrefab; // Prefab for the fish to spawn when caught
+    public GameObject fishPrefabAlternate; // Alternate fish prefab
+
+    public bool caughtAlternateFish; // Boolean to indicate if the alternate fish is caught
+
+
     public GameObject splashEffectPrefab; // Prefab for the splash effect
 
     //public float catchChance = 1.0f; // 100% chance to catch a fish (FOR TESTING)
@@ -30,6 +36,7 @@ public class SwingCasting : MonoBehaviour
     private AudioSource audioSource; // Reference to the AudioSource
     private BobCollider bobberCollision;
     private float offset = 0f;
+    private Coroutine catchCoroutine;
 
     void Start()
     {
@@ -38,6 +45,7 @@ public class SwingCasting : MonoBehaviour
         bobberRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         initialBobberPosition = bobber.position;
         lineRenderer.positionCount = 2;
+        ovrCameraRig = GameObject.Find("CenterEyeAnchor").transform;
 
         // Initialize the AudioSource
         audioSource = GetComponent<AudioSource>();
@@ -96,7 +104,20 @@ public class SwingCasting : MonoBehaviour
         bobberRb.isKinematic = false;
         bobberRb.useGravity = true;
         bobberRb.constraints = RigidbodyConstraints.None;
-        bobberRb.velocity = velocity * castForceMultiplier;
+        Quaternion rotation = Quaternion.Euler(0, -35, 0);
+        Vector3 adjustedVelocity = rotation * velocity;
+
+        Vector3 castDirection = adjustedVelocity.normalized;
+        Vector3 cameraForward = ovrCameraRig.forward;
+
+        float angle = Vector3.Angle(cameraForward, castDirection);
+
+        if (angle > 90f) {
+            ResetBobber();
+            return;
+        }
+
+        bobberRb.velocity = adjustedVelocity * castForceMultiplier;
     }
 
     private int fishCatchCount = 0; // Counter for the number of times the block executes
@@ -104,6 +125,10 @@ public class SwingCasting : MonoBehaviour
 
     void ResetBobber()
     {
+        if (catchCoroutine != null) {
+            StopCoroutine(catchCoroutine);
+            catchCoroutine = null;
+        }
         if (hasFish)
         {
             if (fishCatchCount < maxFishCount)
@@ -160,27 +185,44 @@ public class SwingCasting : MonoBehaviour
                 Destroy(splashEffect, 0.5f); // Adjust duration as necessary
             }
 
-            StartCoroutine(WaitForCatch());
+            if (catchCoroutine != null) {
+                StopCoroutine(catchCoroutine);
+            }
+
+            catchCoroutine = StartCoroutine(WaitForCatch());
         }
     }
     private IEnumerator WaitForCatch()
     {
-        //Wait between 10-45 seconds for catch
-        float waitTime = Random.Range(25f, 50f);
+        // Wait between 25-45 seconds for a catch
+        //float waitTime = Random.Range(25f, 45f);
+        float waitTime = Random.Range(3f, 5f);
+
         yield return new WaitForSeconds(waitTime);
 
-        
         hasFish = true;
 
-        // Spawn the fish object slightly below the water
-        Vector3 fishSpawnPosition = bobber.position + new Vector3(0, -0.2f, 0); // Adjust -0.2f for desired sink depth
-        caughtFish = Instantiate(fishPrefab, fishSpawnPosition, Quaternion.identity);
+        // Weighted chance to determine which fish to spawn
+        float randomChance = Random.Range(0f, 1f); // Generates a value between 0.0 and 1.0
+        if (randomChance <= 0.9f)
+        {
+            // Catch the first fish
+            caughtAlternateFish = false; // Set the boolean to false
+            caughtFish = Instantiate(fishPrefab, bobber.position + new Vector3(0, -0.2f, 0), Quaternion.identity);
+        }
+        else
+        {
+            // Catch the alternate fish
+            caughtAlternateFish = true; // Set the boolean to true
+            caughtFish = Instantiate(fishPrefabAlternate, bobber.position + new Vector3(0, -0.2f, 0), Quaternion.identity);
+        }
 
         // Play the catch sound
         if (catchSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(catchSound);
         }
+
     }
     
 

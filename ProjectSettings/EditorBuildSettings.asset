@@ -15,6 +15,10 @@ EditorBuildSettings:
     path: Assets/Scenes/COPYRestaurant.unity
     guid: 99c529c5a72f738409de2327208e9650
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: ebc3b0a56a45f4d459022f14af41f850,
+      type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: 2eed6c9ae212ffc4ab7995d123ebe0b7,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: c738aadf136e1dd4aa0a976665122e39,
       type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 3f0141a7b136ce1468aca547cdace785,
