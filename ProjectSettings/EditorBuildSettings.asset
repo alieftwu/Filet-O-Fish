@@ -8,9 +8,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/WaterScene.unity
     guid: ed5bbf26752cc8c4c817abf25aedee5c
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/WaterScene 1.unity
     guid: f13bbb2a0aac92d4f8541f45d6c299a1
+  - enabled: 1
+    path: Assets/Scenes/COPYRestaurant.unity
+    guid: 99c529c5a72f738409de2327208e9650
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: c738aadf136e1dd4aa0a976665122e39,
       type: 2}
