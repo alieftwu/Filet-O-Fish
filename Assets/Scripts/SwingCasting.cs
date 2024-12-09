@@ -96,7 +96,9 @@ public class SwingCasting : MonoBehaviour
         bobberRb.isKinematic = false;
         bobberRb.useGravity = true;
         bobberRb.constraints = RigidbodyConstraints.None;
-        bobberRb.velocity = velocity * castForceMultiplier;
+        Quaternion rotation = Quaternion.Euler(0, -35, 0);
+        Vector3 adjustedVelocity = rotation * velocity;
+        bobberRb.velocity = adjustedVelocity * castForceMultiplier;
     }
 
     private int fishCatchCount = 0; // Counter for the number of times the block executes
@@ -165,8 +167,8 @@ public class SwingCasting : MonoBehaviour
     }
     private IEnumerator WaitForCatch()
     {
-        //Wait between 10-45 seconds for catch
-        float waitTime = Random.Range(25f, 50f);
+        //Wait between 30 seconds for catch
+        float waitTime = 30f;
         yield return new WaitForSeconds(waitTime);
 
         
