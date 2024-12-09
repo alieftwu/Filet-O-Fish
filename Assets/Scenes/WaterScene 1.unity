@@ -5021,13 +5021,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 306094646}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0000761528, y: 0.008726225, z: 0.008726225, w: 0.9999238}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: -0, y: -0, z: -0.841}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1805762014}
-  m_LocalEulerAnglesHint: {x: 0, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1001 &306852215
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8834,6 +8834,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4961715093905436, guid: d7348193d18053242b67736aafdf8c03,
     type: 3}
   m_PrefabInstance: {fileID: 536710299}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &536883048 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a,
+    type: 3}
+  m_PrefabInstance: {fileID: 531481958}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &541875359
 PrefabInstance:
@@ -29248,6 +29254,7 @@ MonoBehaviour:
   rodTip: {fileID: 466996654}
   bobber: {fileID: 1690313809}
   boat: {fileID: 1247500131}
+  ovrCameraRig: {fileID: 536883048}
   lineRenderer: {fileID: 1805762019}
   fishPrefab: {fileID: 357532186}
   splashEffectPrefab: {fileID: 7171521028357965389, guid: 0f6e3cca3748ff346aa616e2fd2974be,

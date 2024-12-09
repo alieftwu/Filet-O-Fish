@@ -6,6 +6,7 @@ public class SwingCasting : MonoBehaviour
     public Transform rodTip;
     public Transform bobber;
     public Transform boat; // Reference to the boat for placing caught fish
+    public Transform ovrCameraRig;
     public LineRenderer lineRenderer;
     public GameObject fishPrefab; // Prefab for the fish to spawn when caught
     public GameObject splashEffectPrefab; // Prefab for the splash effect
@@ -30,6 +31,7 @@ public class SwingCasting : MonoBehaviour
     private AudioSource audioSource; // Reference to the AudioSource
     private BobCollider bobberCollision;
     private float offset = 0f;
+    private Coroutine catchCoroutine;
 
     void Start()
     {
@@ -38,6 +40,7 @@ public class SwingCasting : MonoBehaviour
         bobberRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         initialBobberPosition = bobber.position;
         lineRenderer.positionCount = 2;
+        ovrCameraRig = GameObject.Find("CenterEyeAnchor").transform;
 
         // Initialize the AudioSource
         audioSource = GetComponent<AudioSource>();
@@ -98,6 +101,17 @@ public class SwingCasting : MonoBehaviour
         bobberRb.constraints = RigidbodyConstraints.None;
         Quaternion rotation = Quaternion.Euler(0, -35, 0);
         Vector3 adjustedVelocity = rotation * velocity;
+
+        Vector3 castDirection = adjustedVelocity.normalized;
+        Vector3 cameraForward = ovrCameraRig.forward;
+
+        float angle = Vector3.Angle(cameraForward, castDirection);
+
+        if (angle > 90f) {
+            ResetBobber();
+            return;
+        }
+
         bobberRb.velocity = adjustedVelocity * castForceMultiplier;
     }
 
@@ -106,6 +120,10 @@ public class SwingCasting : MonoBehaviour
 
     void ResetBobber()
     {
+        if (catchCoroutine != null) {
+            StopCoroutine(catchCoroutine);
+            catchCoroutine = null;
+        }
         if (hasFish)
         {
             if (fishCatchCount < maxFishCount)
@@ -162,13 +180,17 @@ public class SwingCasting : MonoBehaviour
                 Destroy(splashEffect, 0.5f); // Adjust duration as necessary
             }
 
-            StartCoroutine(WaitForCatch());
+            if (catchCoroutine != null) {
+                StopCoroutine(catchCoroutine);
+            }
+
+            catchCoroutine = StartCoroutine(WaitForCatch());
         }
     }
     private IEnumerator WaitForCatch()
     {
-        //Wait between 30 seconds for catch
-        float waitTime = 30f;
+        //Wait between 25-45 seconds for catch
+        float waitTime = Random.Range(25f, 45f);
         yield return new WaitForSeconds(waitTime);
 
         
