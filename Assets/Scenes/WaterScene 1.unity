@@ -29363,6 +29363,8 @@ MonoBehaviour:
   bobberOffset: {x: 0, y: -0.5, z: 0}
   sinkDepth: -0.1
   sinkDuration: 0.2
+  fishSpacing: 0.4
+  layerHeight: 0.05
 --- !u!120 &1805762019
 LineRenderer:
   serializedVersion: 2
