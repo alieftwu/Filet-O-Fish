@@ -122,7 +122,8 @@ public class SwingCasting : MonoBehaviour
 
     private int fishCatchCount = 0; // Counter for the number of times the block executes
     private const int maxFishCount = 3; // Maximum number of fish that can be processed
-
+    public float fishSpacing = 0.4f;
+    public float layerHeight = 0.1f;
     void ResetBobber()
     {
         if (catchCoroutine != null) {
@@ -131,6 +132,20 @@ public class SwingCasting : MonoBehaviour
         }
         if (hasFish)
         {
+            int currentRow = fishCatchCount % maxFishCount;
+            int currentLayer = fishCatchCount / maxFishCount;
+
+            float horizontalPosition = currentRow * -fishSpacing;
+            float verticalPosition = 0.4f + currentLayer * layerHeight;
+
+            caughtFish.transform.SetParent(boat);
+            caughtFish.transform.localPosition = new Vector3(horizontalPosition, verticalPosition, 0);
+            caughtFish.transform.localRotation = Quaternion.Euler(90f, 0f, 90f);
+
+            caughtFish = null;
+            fishCatchCount++;
+
+            /*
             if (fishCatchCount < maxFishCount)
             {
                 caughtFish.transform.SetParent(boat);
@@ -144,7 +159,7 @@ public class SwingCasting : MonoBehaviour
             }
 
             caughtFish = null; // Clear the reference to the caught fish
-            fishCatchCount++; // Increment the counter
+            fishCatchCount++; // Increment the counter*/
         }
 
         isCast = false;
