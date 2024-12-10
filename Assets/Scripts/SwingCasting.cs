@@ -214,15 +214,14 @@ public class SwingCasting : MonoBehaviour
     private IEnumerator WaitForCatch()
     {
         // Wait between 25-45 seconds for a catch
-        //float waitTime = Random.Range(25f, 45f);
-        float waitTime = Random.Range(10f, 20f);
+        float waitTime = Random.Range(5f, 8f);
 
         yield return new WaitForSeconds(waitTime);
 
         hasFish = true;
 
         // Weighted chance to determine which fish to spawn
-        if (bigFishCount < 5)
+        if (bigFishCount < 4)
         {
             // Catch the first fish
             caughtAlternateFish = false; // Set the boolean to false
