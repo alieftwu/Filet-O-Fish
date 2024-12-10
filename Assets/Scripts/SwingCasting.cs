@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-
+using UnityEngine.SceneManagement;
 public class SwingCasting : MonoBehaviour
 {
     public Transform rodTip;
@@ -10,7 +10,8 @@ public class SwingCasting : MonoBehaviour
     public LineRenderer lineRenderer;
     public GameObject fishPrefab; // Prefab for the fish to spawn when caught
     public GameObject fishPrefabAlternate; // Alternate fish prefab
-
+    public FadeScreen fadeScreen;
+    public int sceneIndex;
     public bool caughtAlternateFish; // Boolean to indicate if the alternate fish is caught
 
 
@@ -22,6 +23,7 @@ public class SwingCasting : MonoBehaviour
     public float castForceMultiplier = 1f;
     public float velocityThreshold = 1.5f;
     public AudioClip catchSound; // Sound effect for catching a fish
+    public AudioClip wakeUpSound;
     public Vector3 bobberOffset = new Vector3(0f, -0.5f, 0f);
     public float sinkDepth = -0.1f; // How far the bobber sinks on collision
     public float sinkDuration = 0.2f; // How long the sinking animation lasts
@@ -37,6 +39,7 @@ public class SwingCasting : MonoBehaviour
     private BobCollider bobberCollision;
     private float offset = 0f;
     private Coroutine catchCoroutine;
+    private float bigFishCount;
 
     void Start()
     {
@@ -96,6 +99,7 @@ public class SwingCasting : MonoBehaviour
         {
             ResetBobber();
         }
+        
     }
 
     void CastBobber(Vector3 velocity)
@@ -211,25 +215,26 @@ public class SwingCasting : MonoBehaviour
     {
         // Wait between 25-45 seconds for a catch
         //float waitTime = Random.Range(25f, 45f);
-        float waitTime = Random.Range(3f, 5f);
+        float waitTime = Random.Range(10f, 20f);
 
         yield return new WaitForSeconds(waitTime);
 
         hasFish = true;
 
         // Weighted chance to determine which fish to spawn
-        float randomChance = Random.Range(0f, 1f); // Generates a value between 0.0 and 1.0
-        if (randomChance <= 0.9f)
+        if (bigFishCount < 5)
         {
             // Catch the first fish
             caughtAlternateFish = false; // Set the boolean to false
             caughtFish = Instantiate(fishPrefab, bobber.position + new Vector3(0, -0.2f, 0), Quaternion.identity);
+            bigFishCount++;
         }
         else
         {
             // Catch the alternate fish
             caughtAlternateFish = true; // Set the boolean to true
             caughtFish = Instantiate(fishPrefabAlternate, bobber.position + new Vector3(0, -0.2f, 0), Quaternion.identity);
+            GoToSceneAsync(sceneIndex);
         }
 
         // Play the catch sound
@@ -263,5 +268,30 @@ public class SwingCasting : MonoBehaviour
         {
             bobberCollision.OnBobberCollision -= HandleBobberCollision;
         }
+    }
+    public void GoToSceneAsync(int sceneIndex)
+    {
+        StartCoroutine(GoToSceneAsyncRoutine(sceneIndex));
+    }
+    IEnumerator GoToSceneAsyncRoutine(int sceneIndex)
+    {
+        Debug.Log("RESTAURANT SCENE CALLED");
+        fadeScreen.FadeOut();
+        if (wakeUpSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(wakeUpSound);
+        }
+        //yield return new WaitForSeconds(fadeScreen.fadeDuration);
+        //Launch the new scene
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        operation.allowSceneActivation = false;
+
+        float timer = 0;
+        while(timer <= fadeScreen.fadeDuration && !operation.isDone)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        operation.allowSceneActivation = true;
     }
 }
