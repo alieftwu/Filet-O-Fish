@@ -1,13 +1,20 @@
 using UnityEngine;
 using System.Collections;
-
+using UnityEngine.SceneManagement;
 public class SwingCasting : MonoBehaviour
 {
     public Transform rodTip;
     public Transform bobber;
     public Transform boat; // Reference to the boat for placing caught fish
+    public Transform ovrCameraRig;
     public LineRenderer lineRenderer;
     public GameObject fishPrefab; // Prefab for the fish to spawn when caught
+    public GameObject fishPrefabAlternate; // Alternate fish prefab
+    public FadeScreen fadeScreen;
+    public int sceneIndex;
+    public bool caughtAlternateFish; // Boolean to indicate if the alternate fish is caught
+
+
     public GameObject splashEffectPrefab; // Prefab for the splash effect
 
     //public float catchChance = 1.0f; // 100% chance to catch a fish (FOR TESTING)
@@ -16,6 +23,7 @@ public class SwingCasting : MonoBehaviour
     public float castForceMultiplier = 1f;
     public float velocityThreshold = 1.5f;
     public AudioClip catchSound; // Sound effect for catching a fish
+    public AudioClip wakeUpSound;
     public Vector3 bobberOffset = new Vector3(0f, -0.5f, 0f);
     public float sinkDepth = -0.1f; // How far the bobber sinks on collision
     public float sinkDuration = 0.2f; // How long the sinking animation lasts
@@ -30,6 +38,8 @@ public class SwingCasting : MonoBehaviour
     private AudioSource audioSource; // Reference to the AudioSource
     private BobCollider bobberCollision;
     private float offset = 0f;
+    private Coroutine catchCoroutine;
+    private float bigFishCount;
 
     void Start()
     {
@@ -38,6 +48,7 @@ public class SwingCasting : MonoBehaviour
         bobberRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         initialBobberPosition = bobber.position;
         lineRenderer.positionCount = 2;
+        ovrCameraRig = GameObject.Find("CenterEyeAnchor").transform;
 
         // Initialize the AudioSource
         audioSource = GetComponent<AudioSource>();
@@ -88,6 +99,7 @@ public class SwingCasting : MonoBehaviour
         {
             ResetBobber();
         }
+        
     }
 
     void CastBobber(Vector3 velocity)
@@ -96,16 +108,48 @@ public class SwingCasting : MonoBehaviour
         bobberRb.isKinematic = false;
         bobberRb.useGravity = true;
         bobberRb.constraints = RigidbodyConstraints.None;
-        bobberRb.velocity = velocity * castForceMultiplier;
+        Quaternion rotation = Quaternion.Euler(0, -35, 0);
+        Vector3 adjustedVelocity = rotation * velocity;
+
+        Vector3 castDirection = adjustedVelocity.normalized;
+        Vector3 cameraForward = ovrCameraRig.forward;
+
+        float angle = Vector3.Angle(cameraForward, castDirection);
+
+        if (angle > 90f) {
+            ResetBobber();
+            return;
+        }
+
+        bobberRb.velocity = adjustedVelocity * castForceMultiplier;
     }
 
     private int fishCatchCount = 0; // Counter for the number of times the block executes
     private const int maxFishCount = 3; // Maximum number of fish that can be processed
-
+    public float fishSpacing = 0.4f;
+    public float layerHeight = 0.1f;
     void ResetBobber()
     {
+        if (catchCoroutine != null) {
+            StopCoroutine(catchCoroutine);
+            catchCoroutine = null;
+        }
         if (hasFish)
         {
+            int currentRow = fishCatchCount % maxFishCount;
+            int currentLayer = fishCatchCount / maxFishCount;
+
+            float horizontalPosition = currentRow * -fishSpacing;
+            float verticalPosition = 0.4f + currentLayer * layerHeight;
+
+            caughtFish.transform.SetParent(boat);
+            caughtFish.transform.localPosition = new Vector3(horizontalPosition, verticalPosition, 0);
+            caughtFish.transform.localRotation = Quaternion.Euler(90f, 0f, 90f);
+
+            caughtFish = null;
+            fishCatchCount++;
+
+            /*
             if (fishCatchCount < maxFishCount)
             {
                 caughtFish.transform.SetParent(boat);
@@ -119,7 +163,7 @@ public class SwingCasting : MonoBehaviour
             }
 
             caughtFish = null; // Clear the reference to the caught fish
-            fishCatchCount++; // Increment the counter
+            fishCatchCount++; // Increment the counter*/
         }
 
         isCast = false;
@@ -160,27 +204,44 @@ public class SwingCasting : MonoBehaviour
                 Destroy(splashEffect, 0.5f); // Adjust duration as necessary
             }
 
-            StartCoroutine(WaitForCatch());
+            if (catchCoroutine != null) {
+                StopCoroutine(catchCoroutine);
+            }
+
+            catchCoroutine = StartCoroutine(WaitForCatch());
         }
     }
     private IEnumerator WaitForCatch()
     {
-        //Wait between 10-45 seconds for catch
-        float waitTime = Random.Range(25f, 50f);
+        // Wait between 25-45 seconds for a catch
+        float waitTime = Random.Range(5f, 8f);
+
         yield return new WaitForSeconds(waitTime);
 
-        
         hasFish = true;
 
-        // Spawn the fish object slightly below the water
-        Vector3 fishSpawnPosition = bobber.position + new Vector3(0, -0.2f, 0); // Adjust -0.2f for desired sink depth
-        caughtFish = Instantiate(fishPrefab, fishSpawnPosition, Quaternion.identity);
+        // Weighted chance to determine which fish to spawn
+        if (bigFishCount < 4)
+        {
+            // Catch the first fish
+            caughtAlternateFish = false; // Set the boolean to false
+            caughtFish = Instantiate(fishPrefab, bobber.position + new Vector3(0, -0.2f, 0), Quaternion.identity);
+            bigFishCount++;
+        }
+        else
+        {
+            // Catch the alternate fish
+            caughtAlternateFish = true; // Set the boolean to true
+            caughtFish = Instantiate(fishPrefabAlternate, bobber.position + new Vector3(0, -0.2f, 0), Quaternion.identity);
+            GoToSceneAsync(sceneIndex);
+        }
 
         // Play the catch sound
         if (catchSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(catchSound);
         }
+
     }
     
 
@@ -206,5 +267,30 @@ public class SwingCasting : MonoBehaviour
         {
             bobberCollision.OnBobberCollision -= HandleBobberCollision;
         }
+    }
+    public void GoToSceneAsync(int sceneIndex)
+    {
+        StartCoroutine(GoToSceneAsyncRoutine(sceneIndex));
+    }
+    IEnumerator GoToSceneAsyncRoutine(int sceneIndex)
+    {
+        Debug.Log("RESTAURANT SCENE CALLED");
+        fadeScreen.FadeOut();
+        if (wakeUpSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(wakeUpSound);
+        }
+        //yield return new WaitForSeconds(fadeScreen.fadeDuration);
+        //Launch the new scene
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        operation.allowSceneActivation = false;
+
+        float timer = 0;
+        while(timer <= fadeScreen.fadeDuration && !operation.isDone)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        operation.allowSceneActivation = true;
     }
 }
